@@ -315,8 +315,7 @@ void TestWindow::keyPressEvent(QKeyEvent* event) {
     // Если нажат Enter и тест запущен, активируем кнопку с фокусом
     if ((event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) && testStarted) {
         // Находим кнопку с фокусом и активируем её
-        QWidget* focusedWidget = focusWidget();
-        if (focusedWidget == yesButton || focusedWidget == noButton || focusedWidget == unsureButton) {
+        if (QWidget* focusedWidget = focusWidget(); focusedWidget == yesButton || focusedWidget == noButton || focusedWidget == unsureButton) {
             QPushButton* button = qobject_cast<QPushButton*>(focusedWidget);
             if (button) {
                 button->click();

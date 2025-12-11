@@ -295,25 +295,13 @@ void MainWindow::loadTests() {
         
         // Загружаем все результаты для каждого теста из TestAnswerTxt
         for (auto& test : tests) {
-            try {
-                std::vector<TestResult> results = FileManager::loadAllResultsForTest(test.getId());
-                // Добавляем все загруженные результаты в тест
-                for (const auto& result : results) {
-                    test.addResult(result);
-                }
-            } catch (const FileException& e) {
-                qDebug() << "Ошибка загрузки результатов для теста" << test.getId() << ":" << e.what();
-            }
+            loadResultsForTest(test);
         }
         
         // После загрузки всех результатов автоматически сохраняем статистику для каждого теста
         for (const auto& test : tests) {
             if (!test.getResults().empty()) {
-                try {
-                    FileManager::saveStatisticsAutomatically(test);
-                } catch (const FileException& e) {
-                    qDebug() << "Ошибка сохранения статистики для теста" << test.getId() << ":" << e.what();
-                }
+                saveStatisticsForTest(test);
             }
         }
     } catch (const FileException& e) {
@@ -321,7 +309,7 @@ void MainWindow::loadTests() {
     }
 }
 
-void MainWindow::saveTests() {
+void MainWindow::saveTests() const {
     QString testDir = FileManager::getTestQuestionDir();
     
     for (const auto& test : tests) {
@@ -335,8 +323,33 @@ void MainWindow::saveTests() {
     }
 }
 
+void MainWindow::loadResultsForTest(Test& test) {
+    try {
+        std::vector<TestResult> results = FileManager::loadAllResultsForTest(test.getId());
+        // Добавляем все загруженные результаты в тест
+        for (const auto& result : results) {
+            test.addResult(result);
+        }
+    } catch (const FileException& e) {
+        qDebug() << "Ошибка загрузки результатов для теста" << test.getId() << ":" << e.what();
+    }
+}
+
+void MainWindow::saveStatisticsForTest(const Test& test) {
+    try {
+        FileManager::saveStatisticsAutomatically(test);
+    } catch (const FileException& e) {
+        qDebug() << "Ошибка сохранения статистики для теста" << test.getId() << ":" << e.what();
+    }
+}
+
 Test* MainWindow::findTest(int testId) {
-    return const_cast<Test*>(std::as_const(*this).findTest(testId));
+    for (auto& test : tests) {
+        if (test.getId() == testId) {
+            return &test;
+        }
+    }
+    return nullptr;
 }
 
 const Test* MainWindow::findTest(int testId) const {

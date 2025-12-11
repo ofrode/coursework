@@ -43,8 +43,7 @@ void Statistics::collectStatistics(const Test& test) {
     }
     
     // Вычисление процентов
-    for (auto& pair : questionStats) {
-        QuestionStats& stats = pair.second;
+    for (auto& [questionId, stats] : questionStats) {
         if (stats.totalAnswers > 0) {
             stats.yesPercent = (stats.yesCount * 100.0) / stats.totalAnswers;
             stats.noPercent = (stats.noCount * 100.0) / stats.totalAnswers;
@@ -54,8 +53,7 @@ void Statistics::collectStatistics(const Test& test) {
 }
 
 Statistics::QuestionStats Statistics::getQuestionStats(int questionId) const {
-    auto it = questionStats.find(questionId);
-    if (it != questionStats.end()) {
+    if (auto it = questionStats.find(questionId); it != questionStats.end()) {
         return it->second;
     }
     return QuestionStats();

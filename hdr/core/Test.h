@@ -19,7 +19,7 @@ class Test : public BaseTest {
 public:
     Test();
     Test(int id, const QString& name);
-    ~Test() override = default;  // Виртуальный деструктор
+    ~Test() override;  // Виртуальный деструктор
     
     int getId() const { return id; }
     QString getName() const { return name; }

@@ -34,7 +34,9 @@ private slots:
 private:
     void setupUI();
     void loadTests();
-    void saveTests();
+    void saveTests() const;
+    void loadResultsForTest(Test& test);
+    void saveStatisticsForTest(const Test& test);
     Test* findTest(int testId);
     const Test* findTest(int testId) const;
     int getNextTestId() { return nextTestId++; }

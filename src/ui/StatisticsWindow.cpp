@@ -31,7 +31,7 @@ void ChartWidget::setData(double yes, double no, double unsure) {
 }
 
 void ChartWidget::paintEvent(QPaintEvent *event) {
-    Q_UNUSED(event);
+    (void)event;
     
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -90,7 +90,7 @@ void ChartWidget::paintEvent(QPaintEvent *event) {
     drawLegend(painter, chartX, chartY + chartWidth + 15, chartWidth);
 }
 
-void ChartWidget::drawLegend(QPainter& painter, int x, int y, int chartWidth) {
+void ChartWidget::drawLegend(QPainter& painter, int x, int y, int chartWidth) const {
     painter.setPen(Qt::black);
     QFont font("Arial", 11);
     font.setBold(false);
@@ -128,7 +128,7 @@ void ChartWidget::drawLegend(QPainter& painter, int x, int y, int chartWidth) {
     
     // Рисуем элементы легенды
     painter.setPen(Qt::black);
-    for (int i = 0; i < legendItems.size(); ++i) {
+    for (qsizetype i = 0; i < legendItems.size(); ++i) {
         int itemX = legendStartX;
         int itemY = currentY;
         
@@ -158,7 +158,7 @@ StatisticsWindow::StatisticsWindow(const Test& test, QWidget *parent)
     updateStatistics();
 }
 
-StatisticsWindow::~StatisticsWindow() {}
+StatisticsWindow::~StatisticsWindow() = default;
 
 void StatisticsWindow::setupUI() {
     setStyleSheet(QString("background-color: %1;").arg(ColorPalette::backgroundColor().name()));
@@ -220,14 +220,15 @@ void StatisticsWindow::updateStatistics() {
     const auto& allStats = statistics.getAllStats();
     statsTable->setRowCount(static_cast<int>(allStats.size()));
     
-    double totalYes = 0, totalNo = 0, totalUnsure = 0;
+    double totalYes = 0;
+    double totalNo = 0;
+    double totalUnsure = 0;
     int totalAnswers = 0;
     
     int row = 0;
-    for (const auto& pair : allStats) {
-        const auto& stats = pair.second;
+    for (const auto& [questionIndex, stats] : allStats) {
         
-        statsTable->setItem(row, 0, new QTableWidgetItem(QString("Вопрос %1").arg(pair.first + 1)));
+        statsTable->setItem(row, 0, new QTableWidgetItem(QString("Вопрос %1").arg(questionIndex + 1)));
         statsTable->setItem(row, 1, new QTableWidgetItem(QString::number(stats.totalAnswers)));
         statsTable->setItem(row, 2, new QTableWidgetItem(QString("%1 (%2%)")
             .arg(stats.yesCount).arg(QString::number(stats.yesPercent, 'f', 1))));

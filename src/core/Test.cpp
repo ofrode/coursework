@@ -6,6 +6,8 @@ Test::Test() : id(0) {}
 
 Test::Test(int id, const QString& name) : id(id), name(name) {}
 
+Test::~Test() = default;
+
 void Test::addQuestion(const Question& question) {
     questions.push_back(question);
 }

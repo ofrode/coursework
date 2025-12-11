@@ -26,7 +26,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     
 private:
-    void drawLegend(QPainter& painter, int x, int y, int chartWidth);
+    void drawLegend(QPainter& painter, int x, int y, int chartWidth) const;
     
     double yesPercent = 0;     // in-class initializer
     double noPercent = 0;      // in-class initializer

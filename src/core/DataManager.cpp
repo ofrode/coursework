@@ -56,8 +56,7 @@ std::vector<Question> DataManager::getQuestions(int testId) {
 }
 
 void DataManager::collectStatisticsForTest(int testId) {
-    Test* test = getTestById(testId);
-    if (test) {
+    if (const Test* test = getTestById(testId)) {
         // Загружаем результаты если они еще не загружены
         if (test->getResults().empty()) {
             loadResultsForTest(testId);
@@ -73,20 +72,18 @@ void DataManager::collectStatisticsForTest(int testId) {
 
 Statistics* DataManager::getStatisticsForTest(int testId) {
     // Если статистика еще не собрана, собираем её
-    if (statisticsLoaded.find(testId) == statisticsLoaded.end() || !statisticsLoaded[testId]) {
+    if (!statisticsLoaded.contains(testId) || !statisticsLoaded[testId]) {
         collectStatisticsForTest(testId);
     }
     
-    auto it = statisticsMap.find(testId);
-    if (it != statisticsMap.end()) {
+    if (auto it = statisticsMap.find(testId); it != statisticsMap.end()) {
         return &(it->second);
     }
     return nullptr;
 }
 
 Statistics::QuestionStats DataManager::getQuestionStats(int testId, int questionId) {
-    Statistics* stats = getStatisticsForTest(testId);
-    if (stats) {
+    if (const Statistics* stats = getStatisticsForTest(testId)) {
         return stats->getQuestionStats(questionId);
     }
     return Statistics::QuestionStats();
@@ -113,8 +110,7 @@ void DataManager::saveTestResult(const TestResult& result) {
 }
 
 void DataManager::saveStatistics(int testId) {
-    Test* test = getTestById(testId);
-    if (test) {
+    if (const Test* test = getTestById(testId)) {
         FileManager::saveStatisticsAutomatically(*test);
     }
 }

@@ -7,6 +7,8 @@
 #include <QDir>
 #include <QDebug>
 #include <algorithm>
+#include <ranges>
+#include <utility>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
@@ -214,18 +216,16 @@ void MainWindow::onDeleteTestClicked(int testId) {
         QMessageBox::Yes | QMessageBox::No);
     
     if (ret == QMessageBox::Yes) {
-        tests.erase(
-            std::remove_if(tests.begin(), tests.end(),
-                [testId](const Test& t) { return t.getId() == testId; }),
-            tests.end()
-        );
+        const auto eraseRange = std::ranges::remove_if(tests,
+            [testId](const Test& t) { return t.getId() == testId; });
+        tests.erase(eraseRange.begin(), eraseRange.end());
         refreshTable();
         saveTests();
     }
 }
 
 void MainWindow::onTakeTestClicked(int testId) {
-    Test* test = findTest(testId);
+    const Test* test = findTest(testId);
     if (!test) return;
     
     if (testWindow) {
@@ -266,7 +266,7 @@ void MainWindow::onTakeTestClicked(int testId) {
 }
 
 void MainWindow::onViewStatisticsClicked(int testId) {
-    Test* test = findTest(testId);
+    const Test* test = findTest(testId);
     if (!test) return;
     
     if (statisticsWindow) {
@@ -336,7 +336,11 @@ void MainWindow::saveTests() {
 }
 
 Test* MainWindow::findTest(int testId) {
-    for (auto& test : tests) {
+    return const_cast<Test*>(std::as_const(*this).findTest(testId));
+}
+
+const Test* MainWindow::findTest(int testId) const {
+    for (const auto& test : tests) {
         if (test.getId() == testId) {
             return &test;
         }

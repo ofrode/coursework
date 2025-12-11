@@ -36,6 +36,7 @@ private:
     void loadTests();
     void saveTests();
     Test* findTest(int testId);
+    const Test* findTest(int testId) const;
     int getNextTestId() { return nextTestId++; }
     
     QTableWidget* tableWidget = nullptr;

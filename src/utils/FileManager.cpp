@@ -5,12 +5,84 @@
 #include "../../hdr/core/Answer.h"
 #include "../../hdr/core/Statistics.h"
 #include <QFile>
+#include <QFileInfo>
 #include <QTextStream>
 #include <QDir>
 #include <QDebug>
 #include <QTextCodec>
 #include <QApplication>
 #include <QDateTime>
+#include <optional>
+
+namespace {
+bool parseMetadataLine(const QString& line, int& testId, QString& userName, int& score, QDateTime& dateTime) {
+    if (line.startsWith("ID теста:")) {
+        testId = line.mid(9).trimmed().toInt();
+        return true;
+    }
+    if (line.startsWith("Пользователь:")) {
+        userName = line.mid(14).trimmed();
+        return true;
+    }
+    if (line.startsWith("Баллы:")) {
+        score = line.mid(7).trimmed().toInt();
+        return true;
+    }
+    if (line.startsWith("Дата и время:")) {
+        const QString dateTimeStr = line.mid(14).trimmed();
+        // Используем 24-часовой формат (HH для часов 0-23)
+        dateTime = QDateTime::fromString(dateTimeStr, "yyyy-MM-dd HH:mm:ss");
+        if (!dateTime.isValid()) {
+            // Пробуем альтернативный формат (hh для часов 0-11)
+            dateTime = QDateTime::fromString(dateTimeStr, "yyyy-MM-dd hh:mm:ss");
+        }
+        return true;
+    }
+    return false;
+}
+
+std::optional<AnswerType> parseAnswerLine(const QString& line) {
+    const int dotIndex = line.indexOf(".");
+    if (dotIndex <= 0) {
+        return std::nullopt;
+    }
+
+    const QString answerStr = line.mid(dotIndex + 1).trimmed();
+    using enum AnswerType;
+    if (answerStr == "Да") {
+        return YES;
+    }
+    if (answerStr == "Нет") {
+        return NO;
+    }
+    if (answerStr == "Не могу ответить") {
+        return UNSURE;
+    }
+    return std::nullopt;
+}
+
+std::optional<TestResult> tryLoadResultFile(const QFileInfo& fileInfo) {
+    try {
+        return FileManager::loadResultFromFile(fileInfo.absoluteFilePath());
+    } catch (const FileException& e) {
+        qDebug() << "Ошибка загрузки результата из файла:" << fileInfo.fileName() << e.what();
+    } catch (const std::exception& e) {
+        qDebug() << "Неизвестная ошибка при загрузке результата:" << fileInfo.fileName() << e.what();
+    }
+    return std::nullopt;
+}
+
+std::optional<Test> tryLoadTestFile(const QFileInfo& fileInfo) {
+    try {
+        return FileManager::loadTestFromFile(fileInfo.absoluteFilePath());
+    } catch (const FileException& e) {
+        qDebug() << "Ошибка загрузки файла:" << fileInfo.fileName() << e.what();
+    } catch (const std::exception& e) {
+        qDebug() << "Неизвестная ошибка при загрузке файла:" << fileInfo.fileName() << e.what();
+    }
+    return std::nullopt;
+}
+} // namespace
 
 QString FileManager::getProjectRootDir() {
     // Получаем директорию исполняемого файла
@@ -23,16 +95,14 @@ QString FileManager::getProjectRootDir() {
     }
     
     // Проверяем наличие CMakeLists.txt для подтверждения, что это корень проекта
-    QString cmakeListsPath = dir.absoluteFilePath("CMakeLists.txt");
-    if (QFile::exists(cmakeListsPath)) {
+    if (const auto cmakeListsPath = dir.absoluteFilePath("CMakeLists.txt"); QFile::exists(cmakeListsPath)) {
         return dir.absolutePath();
     }
     
     // Если CMakeLists.txt не найден, пытаемся найти его, поднимаясь вверх по дереву
     QDir currentDir = QDir::current();
     while (!currentDir.isRoot()) {
-        QString cmakePath = currentDir.absoluteFilePath("CMakeLists.txt");
-        if (QFile::exists(cmakePath)) {
+        if (const auto cmakePath = currentDir.absoluteFilePath("CMakeLists.txt"); QFile::exists(cmakePath)) {
             return currentDir.absolutePath();
         }
         if (!currentDir.cdUp()) {
@@ -50,8 +120,7 @@ QString FileManager::getTestQuestionDir() {
     QString testDir = dir.absoluteFilePath("TestQuestionTxt");
     
     // Создаем директорию, если её нет
-    QDir testQDir(testDir);
-    if (!testQDir.exists()) {
+    if (QDir testQDir(testDir); !testQDir.exists()) {
         testQDir.mkpath(".");
     }
     
@@ -64,8 +133,7 @@ QString FileManager::getTestAnswerDir() {
     QString answerDir = dir.absoluteFilePath("TestAnswerTxt");
     
     // Создаем директорию, если её нет
-    QDir testADir(answerDir);
-    if (!testADir.exists()) {
+    if (QDir testADir(answerDir); !testADir.exists()) {
         testADir.mkpath(".");
     }
     
@@ -78,8 +146,7 @@ QString FileManager::getStatisticsDir() {
     QString statDir = dir.absoluteFilePath("Stat");
     
     // Создаем директорию, если её нет
-    QDir statDirectory(statDir);
-    if (!statDirectory.exists()) {
+    if (QDir statDirectory(statDir); !statDirectory.exists()) {
         statDirectory.mkpath(".");
     }
     
@@ -182,10 +249,11 @@ void FileManager::saveResultToFile(const TestResult& result, const QString& file
         int i = 1;
         for (auto answer : result.getAnswers()) {
             QString answerStr;
+            using enum AnswerType;
             switch(answer) {
-                case AnswerType::YES: answerStr = "Да"; break;
-                case AnswerType::NO: answerStr = "Нет"; break;
-                case AnswerType::UNSURE: answerStr = "Не могу ответить"; break;
+                case YES: answerStr = "Да"; break;
+                case NO: answerStr = "Нет"; break;
+                case UNSURE: answerStr = "Не могу ответить"; break;
             }
             out << "  " << i << ". " << answerStr << "\n";
             i++;
@@ -224,43 +292,25 @@ TestResult FileManager::loadResultFromFile(const QString& filename) {
                 continue;
             }
             
-            if (trimmedLine.startsWith("ID теста:")) {
-                testId = trimmedLine.mid(9).trimmed().toInt();
-            } else if (trimmedLine.startsWith("Пользователь:")) {
-                userName = trimmedLine.mid(14).trimmed();
-            } else if (trimmedLine.startsWith("Баллы:")) {
-                score = trimmedLine.mid(7).trimmed().toInt();
-            } else if (trimmedLine.startsWith("Дата и время:")) {
-                QString dateTimeStr = trimmedLine.mid(14).trimmed();
-                // Используем 24-часовой формат (HH для часов 0-23)
-                dateTime = QDateTime::fromString(dateTimeStr, "yyyy-MM-dd HH:mm:ss");
-                if (!dateTime.isValid()) {
-                    // Пробуем альтернативный формат (hh для часов 0-11)
-                    dateTime = QDateTime::fromString(dateTimeStr, "yyyy-MM-dd hh:mm:ss");
-                }
-            } else if (trimmedLine.startsWith("Результат:")) {
+            if (trimmedLine.startsWith("Результат:")) {
                 // Пропускаем строку с описанием результата, она вычисляется автоматически
                 continue;
-            } else if (trimmedLine == "Ответы:") {
+            }
+
+            if (trimmedLine == "Ответы:") {
                 inAnswers = true;
-            } else if (inAnswers && trimmedLine.contains(".")) {
-                // Парсим ответы в формате "  1. Да" или "  2. Нет"
-                int dotIndex = trimmedLine.indexOf(".");
-                if (dotIndex > 0) {
-                    QString answerStr = trimmedLine.mid(dotIndex + 1).trimmed();
-                    AnswerType answer;
-                    if (answerStr == "Да") {
-                        answer = AnswerType::YES;
-                        answers.push_back(answer);
-                    } else if (answerStr == "Нет") {
-                        answer = AnswerType::NO;
-                        answers.push_back(answer);
-                    } else if (answerStr == "Не могу ответить") {
-                        answer = AnswerType::UNSURE;
-                        answers.push_back(answer);
-                    }
-                    // Если формат не распознан, пропускаем строку
+                continue;
+            }
+
+            if (!inAnswers) {
+                if (parseMetadataLine(trimmedLine, testId, userName, score, dateTime)) {
+                    continue;
                 }
+                continue;
+            }
+
+            if (auto answer = parseAnswerLine(trimmedLine)) {
+                answers.push_back(*answer);
             }
         }
         
@@ -310,8 +360,10 @@ void FileManager::saveResultAutomatically(const TestResult& result) {
             .arg(dateTimeStr));
         
         saveResultToFile(result, filename);
-    } catch (const std::exception& e) {
+    } catch (const FileException& e) {
         qDebug() << "Ошибка автоматического сохранения результата:" << e.what();
+    } catch (const std::exception& e) {
+        qDebug() << "Неизвестная ошибка при автоматическом сохранении результата:" << e.what();
     }
 }
 
@@ -335,18 +387,17 @@ std::vector<TestResult> FileManager::loadAllResultsForTest(int testId) {
         QFileInfoList fileList = dir.entryInfoList(filters, QDir::Files);
         
         for (const QFileInfo& fileInfo : fileList) {
-            try {
-                TestResult result = loadResultFromFile(fileInfo.absoluteFilePath());
+            if (auto result = tryLoadResultFile(fileInfo)) {
                 // Проверяем, что ID теста совпадает (на случай, если в имени файла что-то не так)
-                if (result.getTestId() == testId) {
-                    results.push_back(result);
+                if (result->getTestId() == testId) {
+                    results.push_back(*result);
                 }
-            } catch (const FileException& e) {
-                qDebug() << "Ошибка загрузки результата из файла:" << fileInfo.fileName() << e.what();
             }
         }
-    } catch (const std::exception& e) {
+    } catch (const FileException& e) {
         qDebug() << "Ошибка при загрузке результатов для теста:" << e.what();
+    } catch (const std::exception& e) {
+        qDebug() << "Неизвестная ошибка при загрузке результатов для теста:" << e.what();
     }
     
     return results;
@@ -390,12 +441,13 @@ void FileManager::saveStatisticsAutomatically(const Test& test) {
         out << "Статистика по вопросам:\n";
         out << "----------------------------------------------------------------\n";
         
-        int totalYes = 0, totalNo = 0, totalUnsure = 0;
+        int totalYes = 0;
+        int totalNo = 0;
+        int totalUnsure = 0;
         int totalAnswers = 0;
         
-        for (const auto& pair : allStats) {
-            const auto& stats = pair.second;
-            out << "Вопрос " << (pair.first + 1) << ":\n";
+        for (const auto& [questionIndex, stats] : allStats) {
+            out << "Вопрос " << (questionIndex + 1) << ":\n";
             out << "  Всего ответов: " << stats.totalAnswers << "\n";
             out << "  Да: " << stats.yesCount << " (" << QString::number(stats.yesPercent, 'f', 1) << "%)\n";
             out << "  Нет: " << stats.noCount << " (" << QString::number(stats.noPercent, 'f', 1) << "%)\n";
@@ -420,8 +472,10 @@ void FileManager::saveStatisticsAutomatically(const Test& test) {
         }
         
         file.close();
-    } catch (const std::exception& e) {
+    } catch (const FileException& e) {
         qDebug() << "Ошибка автоматического сохранения статистики:" << e.what();
+    } catch (const std::exception& e) {
+        qDebug() << "Неизвестная ошибка при автоматическом сохранении статистики:" << e.what();
     }
 }
 
@@ -440,13 +494,12 @@ std::vector<Test> FileManager::loadAllTests(const QString& directory) {
         QFileInfoList fileList = dir.entryInfoList(filters, QDir::Files);
         
         for (const QFileInfo& fileInfo : fileList) {
-            try {
-                Test test = loadTestFromFile(fileInfo.absoluteFilePath());
-                tests.push_back(test);
-            } catch (const FileException& e) {
-                qDebug() << "Ошибка загрузки файла:" << fileInfo.fileName() << e.what();
+            if (auto test = tryLoadTestFile(fileInfo)) {
+                tests.push_back(*test);
             }
         }
+    } catch (const FileException& e) {
+        throw;
     } catch (const std::exception& e) {
         throw FileException("Ошибка при загрузке тестов: " + QString(e.what()));
     }

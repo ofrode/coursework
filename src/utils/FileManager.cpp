@@ -8,7 +8,7 @@
 #include <QTextStream>
 #include <QDir>
 #include <QDebug>
-#include <QStringConverter>
+#include <QTextCodec>
 #include <QApplication>
 #include <QDateTime>
 
@@ -104,7 +104,7 @@ void FileManager::saveTestToFile(const Test& test, const QString& filename) {
         }
         
         QTextStream out(&file);
-        out.setEncoding(QStringConverter::Encoding::Utf8);
+        out.setCodec("UTF-8");
         
         out << "TEST_ID:" << test.getId() << "\n";
         out << "TEST_NAME:" << test.getName() << "\n";
@@ -127,7 +127,7 @@ Test FileManager::loadTestFromFile(const QString& filename) {
         QFile file(filename);
         file.open(QIODevice::ReadOnly | QIODevice::Text);
         QTextStream in(&file);
-        in.setEncoding(QStringConverter::Encoding::Utf8);
+        in.setCodec("UTF-8");
         
         Test test;
         QString line;
@@ -169,7 +169,7 @@ void FileManager::saveResultToFile(const TestResult& result, const QString& file
         }
         
         QTextStream out(&file);
-        out.setEncoding(QStringConverter::Encoding::Utf8);
+        out.setCodec("UTF-8");
         
         out << "=== Результат теста ===\n";
         out << "ID теста: " << result.getTestId() << "\n";
@@ -205,7 +205,7 @@ TestResult FileManager::loadResultFromFile(const QString& filename) {
         QFile file(filename);
         file.open(QIODevice::ReadOnly | QIODevice::Text);
         QTextStream in(&file);
-        in.setEncoding(QStringConverter::Encoding::Utf8);
+        in.setCodec("UTF-8");
         
         TestResult result;
         QString line;
@@ -367,7 +367,7 @@ void FileManager::saveStatisticsAutomatically(const Test& test) {
         }
         
         QTextStream out(&file);
-        out.setEncoding(QStringConverter::Encoding::Utf8);
+        out.setCodec("UTF-8");
         
         // Собираем статистику по всем результатам теста
         Statistics statistics;

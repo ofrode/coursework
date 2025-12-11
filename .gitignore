@@ -1,42 +1,14 @@
-# Build directories
-build/
-cmake-build-*/
+# Игнорировать всё
+*
 
-# CMake files
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
-Makefile
-*.cmake
-!CMakeLists.txt
+# Кроме этих файлов и папок
+!.gitignore
+!README.md
+!src/
+!src/**
+!hdr/
+!hdr/**
 
-# Qt generated files
-moc_*.cpp
-ui_*.h
-qrc_*.cpp
-*.moc
-
-# Executables
-QtApp
-*.exe
-*.out
-*.app
-
-# IDE files
-.vscode/launch.json
-.vscode/settings.json
-.vscode/tasks.json
-.idea/
-*.swp
-*.swo
-*~
-
-# OS files
-.DS_Store
-Thumbs.db
-
-
-
-
-
-
+# Игнорировать скрытые файлы в разрешённых папках
+src/.*
+hdr/.*

@@ -12,7 +12,7 @@
 #include <QDateTime>
 #include <QFile>
 #include <QTextStream>
-#include <QStringConverter>
+#include <QTextCodec>
 #include <QList>
 #include <QPair>
 #include <cmath>

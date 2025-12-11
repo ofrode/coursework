@@ -38,7 +38,7 @@ class StatisticsWindow : public QDialog {
 
 public:
     explicit StatisticsWindow(const Test& test, QWidget *parent = nullptr);
-    ~StatisticsWindow();
+    ~StatisticsWindow() override;
 
 private:
     void setupUI();

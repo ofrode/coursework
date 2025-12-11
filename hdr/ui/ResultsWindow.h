@@ -18,7 +18,7 @@ class ResultsWindow : public QDialog {
 
 public:
     explicit ResultsWindow(const TestResult& result, const Test& test, QWidget *parent = nullptr);
-    ~ResultsWindow();
+    ~ResultsWindow() override;
 
 private slots:
     void onSaveClicked();

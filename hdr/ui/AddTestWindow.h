@@ -22,7 +22,7 @@ class AddTestWindow : public QDialog {
 public:
     explicit AddTestWindow(int testId, QWidget *parent = nullptr);
     explicit AddTestWindow(QWidget *parent = nullptr);
-    ~AddTestWindow();
+    ~AddTestWindow() override;
 
 signals:
     void testAdded(const Test& test);

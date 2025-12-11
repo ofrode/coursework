@@ -54,7 +54,7 @@ private:
 // Исключение для работы с файлами
 class FileException : public std::runtime_error {
 public:
-    FileException(const QString& message) 
+    explicit FileException(const QString& message) 
         : std::runtime_error(message.toStdString()) {}
 };
 

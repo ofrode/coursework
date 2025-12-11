@@ -16,8 +16,5 @@ QString Answer::getTypeString() const {
 bool Answer::operator==(const Answer& other) const {
     return type == other.type && score == other.score;
 }
-
-bool Answer::operator!=(const Answer& other) const {
-    return !(*this == other);
-}
+// C++20: operator!= генерируется автоматически из operator==
 

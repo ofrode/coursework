@@ -18,9 +18,8 @@ public:
     void setText(const QString& t) { text = t; }
     void addAnswer(const Answer& answer);
     
-    // Перегрузка операторов
+    // Перегрузка операторов (C++20: operator!= генерируется автоматически)
     bool operator==(const Question& other) const;
-    bool operator!=(const Question& other) const;
     
 private:
     int id;

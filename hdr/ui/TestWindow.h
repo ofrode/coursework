@@ -23,7 +23,7 @@ class TestWindow : public QDialog {
 
 public:
     explicit TestWindow(const Test& test, QWidget *parent = nullptr);
-    ~TestWindow();
+    ~TestWindow() override;
     
 protected:
     void keyPressEvent(QKeyEvent* event) override;

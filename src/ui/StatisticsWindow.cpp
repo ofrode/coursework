@@ -128,24 +128,31 @@ void ChartWidget::drawLegend(QPainter& painter, int x, int y, int chartWidth) co
     
     // Рисуем элементы легенды
     painter.setPen(Qt::black);
-    for (qsizetype i = 0; i < legendItems.size(); ++i) {
+    auto percentIt = percents.constBegin();
+    for (const auto& legendItem : legendItems) {
+        if (percentIt == percents.constEnd()) {
+            break; // Защита от несоответствия размеров
+        }
+        
         int itemX = legendStartX;
         int itemY = currentY;
         
         // Цветной квадрат
-        painter.setBrush(QBrush(legendItems[i].second));
+        painter.setBrush(QBrush(legendItem.second));
         painter.setPen(QPen(Qt::black, 1));
         painter.drawRect(itemX, itemY, colorBoxSize, colorBoxSize);
         
         // Текст с процентом
-        QString label = legendItems[i].first;
-        QString percentText = (percents[i] > 0) ? 
-            QString("%1: %2%").arg(label).arg(QString::number(percents[i], 'f', 1)) :
+        QString label = legendItem.first;
+        const double percent = *percentIt;
+        QString percentText = (percent > 0) ? 
+            QString("%1: %2%").arg(label).arg(QString::number(percent, 'f', 1)) :
             QString("%1: 0%").arg(label);
         
         painter.drawText(itemX + textOffset, itemY + colorBoxSize - 3, percentText);
         
         currentY += legendItemHeight + legendItemSpacing;
+        ++percentIt;
     }
 }
 

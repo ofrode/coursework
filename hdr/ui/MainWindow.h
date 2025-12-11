@@ -35,8 +35,8 @@ private:
     void setupUI();
     void loadTests();
     void saveTests() const;
-    void loadResultsForTest(Test& test);
-    void saveStatisticsForTest(const Test& test);
+    void loadResultsForTest(Test& test) const;
+    void saveStatisticsForTest(const Test& test) const;
     Test* findTest(int testId);
     const Test* findTest(int testId) const;
     int getNextTestId() { return nextTestId++; }

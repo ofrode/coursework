@@ -67,8 +67,6 @@ std::optional<TestResult> tryLoadResultFile(const QFileInfo& fileInfo) {
         return FileManager::loadResultFromFile(fileInfo.absoluteFilePath());
     } catch (const FileException& e) {
         qDebug() << "Ошибка загрузки результата из файла:" << fileInfo.fileName() << e.what();
-    } catch (const std::runtime_error& e) {
-        qDebug() << "Неизвестная ошибка при загрузке результата:" << fileInfo.fileName() << e.what();
     }
     return std::nullopt;
 }
@@ -78,8 +76,6 @@ std::optional<Test> tryLoadTestFile(const QFileInfo& fileInfo) {
         return FileManager::loadTestFromFile(fileInfo.absoluteFilePath());
     } catch (const FileException& e) {
         qDebug() << "Ошибка загрузки файла:" << fileInfo.fileName() << e.what();
-    } catch (const std::runtime_error& e) {
-        qDebug() << "Неизвестная ошибка при загрузке файла:" << fileInfo.fileName() << e.what();
     }
     return std::nullopt;
 }
@@ -363,8 +359,6 @@ void FileManager::saveResultAutomatically(const TestResult& result) {
         saveResultToFile(result, filename);
     } catch (const FileException& e) {
         qDebug() << "Ошибка автоматического сохранения результата:" << e.what();
-    } catch (const std::runtime_error& e) {
-        qDebug() << "Неизвестная ошибка при автоматическом сохранении результата:" << e.what();
     }
 }
 
@@ -397,8 +391,6 @@ std::vector<TestResult> FileManager::loadAllResultsForTest(int testId) {
         }
     } catch (const FileException& e) {
         qDebug() << "Ошибка при загрузке результатов для теста:" << e.what();
-    } catch (const std::runtime_error& e) {
-        qDebug() << "Неизвестная ошибка при загрузке результатов для теста:" << e.what();
     }
     
     return results;
@@ -475,8 +467,6 @@ void FileManager::saveStatisticsAutomatically(const Test& test) {
         file.close();
     } catch (const FileException& e) {
         qDebug() << "Ошибка автоматического сохранения статистики:" << e.what();
-    } catch (const std::runtime_error& e) {
-        qDebug() << "Неизвестная ошибка при автоматическом сохранении статистики:" << e.what();
     }
 }
 

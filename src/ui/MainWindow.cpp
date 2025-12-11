@@ -323,7 +323,7 @@ void MainWindow::saveTests() const {
     }
 }
 
-void MainWindow::loadResultsForTest(Test& test) {
+void MainWindow::loadResultsForTest(Test& test) const {
     try {
         std::vector<TestResult> results = FileManager::loadAllResultsForTest(test.getId());
         // Добавляем все загруженные результаты в тест
@@ -335,7 +335,7 @@ void MainWindow::loadResultsForTest(Test& test) {
     }
 }
 
-void MainWindow::saveStatisticsForTest(const Test& test) {
+void MainWindow::saveStatisticsForTest(const Test& test) const {
     try {
         FileManager::saveStatisticsAutomatically(test);
     } catch (const FileException& e) {

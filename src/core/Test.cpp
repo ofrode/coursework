@@ -6,14 +6,7 @@ Test::Test() : id(0) {}
 
 Test::Test(int id, const QString& name) : id(id), name(name) {}
 
-Test::~Test() {
-    // Все ресурсы управляются автоматически:
-    // - int id: примитивный тип
-    // - QString name: RAII управление
-    // - std::vector<Question> questions: RAII управление
-    // - std::vector<TestResult> results: RAII управление
-    // Деструкторы членов класса вызываются автоматически
-}
+Test::~Test() = default;
 
 void Test::addQuestion(const Question& question) {
     questions.push_back(question);

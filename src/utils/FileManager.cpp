@@ -489,8 +489,6 @@ std::vector<Test> FileManager::loadAllTests(const QString& directory) {
                 tests.push_back(*test);
             }
         }
-    } catch (const FileException&) {
-        throw;
     } catch (const std::runtime_error& e) {
         throw FileException("Ошибка при загрузке тестов: " + QString(e.what()));
     }

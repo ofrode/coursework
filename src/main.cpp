@@ -5,10 +5,10 @@
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     
-    app.setStyle(QStyleFactory::create("Fusion"));
+    QApplication::setStyle(QStyleFactory::create("Fusion"));
     
     MainWindow window;
     window.show();
     
-    return app.exec();
+    return QApplication::exec();
 }

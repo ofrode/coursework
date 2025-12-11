@@ -43,20 +43,20 @@ private:
     
     const Test& test;
     TestResult currentResult;
-    int currentQuestionIndex;
-    bool testStarted;
+    int currentQuestionIndex = 0;    // in-class initializer
+    bool testStarted = false;        // in-class initializer
     
-    QLabel* welcomeLabel;
-    QLineEdit* nameEdit;
-    QPushButton* startButton;
-    QLabel* questionLabel;
-    QProgressBar* progressBar;
-    QPushButton* yesButton;
-    QPushButton* noButton;
-    QPushButton* unsureButton;
-    QLabel* progressLabel;
+    QLabel* welcomeLabel = nullptr;
+    QLineEdit* nameEdit = nullptr;
+    QPushButton* startButton = nullptr;
+    QLabel* questionLabel = nullptr;
+    QProgressBar* progressBar = nullptr;
+    QPushButton* yesButton = nullptr;
+    QPushButton* noButton = nullptr;
+    QPushButton* unsureButton = nullptr;
+    QLabel* progressLabel = nullptr;
     
-    ResultsWindow* resultsWindow;
+    ResultsWindow* resultsWindow = nullptr;  // in-class initializer
 };
 
 #endif // TESTWINDOW_H

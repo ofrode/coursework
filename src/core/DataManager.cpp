@@ -3,13 +3,10 @@
 #include <algorithm>
 
 DataManager& DataManager::getInstance() {
-    static DataManager instance;
     return instance;
 }
 
-DataManager::DataManager() {
-    // Конструктор по умолчанию
-}
+DataManager::DataManager() = default;
 
 void DataManager::loadAllTests() {
     QString testDir = FileManager::getTestQuestionDir();
@@ -40,8 +37,7 @@ std::vector<Test>& DataManager::getAllTests() {
 }
 
 Question* DataManager::getQuestion(int testId, int questionIndex) {
-    Test* test = getTestById(testId);
-    if (test) {
+    if (const Test* test = getTestById(testId)) {
         auto questions = test->getQuestions();
         if (questionIndex >= 0 && questionIndex < static_cast<int>(questions.size())) {
             // Возвращаем указатель на вопрос в тесте
@@ -53,8 +49,7 @@ Question* DataManager::getQuestion(int testId, int questionIndex) {
 }
 
 std::vector<Question> DataManager::getQuestions(int testId) {
-    Test* test = getTestById(testId);
-    if (test) {
+    if (const Test* test = getTestById(testId)) {
         return test->getQuestions();
     }
     return std::vector<Question>();

@@ -6,7 +6,7 @@
 #include <algorithm>
 
 AddTestWindow::AddTestWindow(int testId, QWidget *parent)
-    : QDialog(parent), nextQuestionId(0), testId(testId) {
+    : QDialog(parent), testId(testId) {
     setWindowTitle("Добавить тест");
     setModal(true);
     setMinimumSize(600, 500);
@@ -14,14 +14,14 @@ AddTestWindow::AddTestWindow(int testId, QWidget *parent)
 }
 
 AddTestWindow::AddTestWindow(QWidget *parent)
-    : QDialog(parent), nextQuestionId(0), testId(0) {
+    : QDialog(parent) {
     setWindowTitle("Добавить тест");
     setModal(true);
     setMinimumSize(600, 500);
     setupUI();
 }
 
-AddTestWindow::~AddTestWindow() {}
+AddTestWindow::~AddTestWindow() = default;
 
 void AddTestWindow::setupUI() {
     setStyleSheet(QString("background-color: %1;").arg(ColorPalette::backgroundColor().name()));

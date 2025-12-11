@@ -18,15 +18,15 @@
 #include <cmath>
 
 ChartWidget::ChartWidget(QWidget *parent)
-    : QWidget(parent), yesPercent(0), noPercent(0), unsurePercent(0) {
+    : QWidget(parent) {
     // Увеличиваем минимальную высоту, чтобы поместилась диаграмма и легенда
     setMinimumHeight(280);
 }
 
-void ChartWidget::setData(double yesPercent, double noPercent, double unsurePercent) {
-    this->yesPercent = yesPercent;
-    this->noPercent = noPercent;
-    this->unsurePercent = unsurePercent;
+void ChartWidget::setData(double yes, double no, double unsure) {
+    yesPercent = yes;
+    noPercent = no;
+    unsurePercent = unsure;
     update();
 }
 

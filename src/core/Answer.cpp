@@ -1,20 +1,18 @@
 #include "../../hdr/core/Answer.h"
 
 QString Answer::getTypeString() const {
+    using enum AnswerType;  // C++20: сокращение записи
     switch(type) {
-        case AnswerType::YES:
+        case YES:
             return "Да";
-        case AnswerType::NO:
+        case NO:
             return "Нет";
-        case AnswerType::UNSURE:
+        case UNSURE:
             return "Не могу ответить";
         default:
             return "Неизвестно";
     }
 }
 
-bool Answer::operator==(const Answer& other) const {
-    return type == other.type && score == other.score;
-}
-// C++20: operator!= генерируется автоматически из operator==
+// C++20: operator== и operator!= используют = default
 

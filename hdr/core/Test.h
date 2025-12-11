@@ -19,6 +19,7 @@ class Test : public BaseTest {
 public:
     Test();
     Test(int id, const QString& name);
+    ~Test() override = default;  // Виртуальный деструктор
     
     int getId() const { return id; }
     QString getName() const { return name; }
@@ -30,9 +31,8 @@ public:
     void addResult(const TestResult& result);
     void removeQuestion(int index);
     
-    // Перегрузка операторов
+    // Перегрузка операторов (C++20: operator!= генерируется автоматически)
     bool operator==(const Test& other) const;
-    bool operator!=(const Test& other) const;
     Test& operator=(const Test& other);
     
     // Дружественная функция для вывода

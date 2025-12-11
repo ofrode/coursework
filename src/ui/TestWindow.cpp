@@ -5,8 +5,7 @@
 #include <QKeyEvent>
 
 TestWindow::TestWindow(const Test& test, QWidget *parent)
-    : QDialog(parent), test(test), currentQuestionIndex(0), testStarted(false),
-      resultsWindow(nullptr) {
+    : QDialog(parent), test(test) {
     setWindowTitle("Прохождение теста: " + test.getName());
     setModal(true);
     setMinimumSize(700, 500);
@@ -314,22 +313,20 @@ void TestWindow::showResults() {
 
 void TestWindow::keyPressEvent(QKeyEvent* event) {
     // Если нажат Enter и тест запущен, активируем кнопку с фокусом
-    if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
-        if (testStarted) {
-            // Находим кнопку с фокусом и активируем её
-            QWidget* focusedWidget = focusWidget();
-            if (focusedWidget == yesButton || focusedWidget == noButton || focusedWidget == unsureButton) {
-                QPushButton* button = qobject_cast<QPushButton*>(focusedWidget);
-                if (button) {
-                    button->click();
-                    return;
-                }
-            }
-            // Если фокус не на кнопке, но кнопки видны, активируем первую кнопку (Да)
-            if (yesButton->isVisible()) {
-                yesButton->click();
+    if ((event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) && testStarted) {
+        // Находим кнопку с фокусом и активируем её
+        QWidget* focusedWidget = focusWidget();
+        if (focusedWidget == yesButton || focusedWidget == noButton || focusedWidget == unsureButton) {
+            QPushButton* button = qobject_cast<QPushButton*>(focusedWidget);
+            if (button) {
+                button->click();
                 return;
             }
+        }
+        // Если фокус не на кнопке, но кнопки видны, активируем первую кнопку (Да)
+        if (yesButton->isVisible()) {
+            yesButton->click();
+            return;
         }
     }
     // Вызываем базовую реализацию для обработки других клавиш

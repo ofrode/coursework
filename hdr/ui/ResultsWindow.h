@@ -21,7 +21,7 @@ public:
     ~ResultsWindow() override;
 
 private slots:
-    void onSaveClicked();
+    void onSaveClicked() const;
 
 private:
     void setupUI();

@@ -9,8 +9,7 @@
 #include <algorithm>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), nextTestId(1), addTestWindow(nullptr),
-      statisticsWindow(nullptr), testWindow(nullptr) {
+    : QMainWindow(parent) {
     setupUI();
     loadTests();
     refreshTable();

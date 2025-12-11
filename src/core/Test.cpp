@@ -23,10 +23,7 @@ void Test::removeQuestion(int index) {
 bool Test::operator==(const Test& other) const {
     return id == other.id && name == other.name;
 }
-
-bool Test::operator!=(const Test& other) const {
-    return !(*this == other);
-}
+// C++20: operator!= генерируется автоматически
 
 Test& Test::operator=(const Test& other) {
     if (this != &other) {

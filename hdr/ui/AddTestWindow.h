@@ -48,8 +48,8 @@ private:
     QPushButton* cancelButton;
     
     std::vector<QString> questions;  // STL контейнер
-    int nextQuestionId;
-    int testId;
+    int nextQuestionId = 0;  // in-class initializer
+    int testId = 0;          // in-class initializer
 };
 
 #endif // ADDTESTWINDOW_H

@@ -3,7 +3,7 @@
 #include "../../hdr/core/TestResult.h"
 #include "../../hdr/core/Answer.h"
 
-Statistics::Statistics() : totalTests(0), totalAnswers(0) {}
+Statistics::Statistics() = default;
 
 void Statistics::collectStatistics(const Test& test) {
     totalTests++;
@@ -15,7 +15,7 @@ void Statistics::collectStatistics(const Test& test) {
         for (size_t i = 0; i < answers.size(); ++i) {
             int questionId = static_cast<int>(i);
             
-            if (questionStats.find(questionId) == questionStats.end()) {
+            if (!questionStats.contains(questionId)) {
                 QuestionStats stats;
                 stats.totalAnswers = 0;
                 stats.yesCount = 0;
@@ -27,14 +27,15 @@ void Statistics::collectStatistics(const Test& test) {
             QuestionStats& stats = questionStats[questionId];
             stats.totalAnswers++;
             
+            using enum AnswerType;  // C++20
             switch(answers[i]) {
-                case AnswerType::YES:
+                case YES:
                     stats.yesCount++;
                     break;
-                case AnswerType::NO:
+                case NO:
                     stats.noCount++;
                     break;
-                case AnswerType::UNSURE:
+                case UNSURE:
                     stats.unsureCount++;
                     break;
             }

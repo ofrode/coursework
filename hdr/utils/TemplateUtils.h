@@ -3,18 +3,19 @@
 
 #include <vector>
 #include <algorithm>
+#include <ranges>
 #include <iterator>
 
-// Шаблонная функция для поиска элемента в контейнере
+// Шаблонная функция для поиска элемента в контейнере (C++20 ranges)
 template<typename Container, typename Value>
-typename Container::const_iterator findInContainer(const Container& container, const Value& value) {
-    return std::find(container.begin(), container.end(), value);
+auto findInContainer(const Container& container, const Value& value) {
+    return std::ranges::find(container, value);
 }
 
-// Шаблонная функция для подсчета элементов
+// Шаблонная функция для подсчета элементов (C++20 ranges)
 template<typename Container, typename Predicate>
 int countIf(const Container& container, Predicate pred) {
-    return static_cast<int>(std::count_if(container.begin(), container.end(), pred));
+    return static_cast<int>(std::ranges::count_if(container, pred));
 }
 
 // Шаблонный класс для работы с итераторами
@@ -24,14 +25,14 @@ public:
     using iterator = typename std::vector<T>::iterator;
     using const_iterator = typename std::vector<T>::const_iterator;
     
-    ContainerIterator(std::vector<T>& container) : container_(container) {}
+    explicit ContainerIterator(std::vector<T>& container) : container_(container) {}
     
-    iterator begin() { return container_.begin(); }
-    iterator end() { return container_.end(); }
-    const_iterator begin() const { return container_.begin(); }
-    const_iterator end() const { return container_.end(); }
-    const_iterator cbegin() const { return container_.cbegin(); }
-    const_iterator cend() const { return container_.cend(); }
+    iterator begin() { return std::begin(container_); }
+    iterator end() { return std::end(container_); }
+    const_iterator begin() const { return std::cbegin(container_); }
+    const_iterator end() const { return std::cend(container_); }
+    const_iterator cbegin() const { return std::cbegin(container_); }
+    const_iterator cend() const { return std::cend(container_); }
     
 private:
     std::vector<T>& container_;

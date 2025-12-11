@@ -20,8 +20,8 @@ public:
     int getScore() const { return score; }
     QString getTypeString() const;
     
-    // Перегрузка операторов (C++20: operator!= генерируется автоматически)
-    bool operator==(const Answer& other) const;
+    // Перегрузка операторов (C++20: operator== и operator!= генерируются автоматически)
+    bool operator==(const Answer& other) const = default;
     
 private:
     AnswerType type;

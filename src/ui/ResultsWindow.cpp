@@ -16,7 +16,7 @@ ResultsWindow::ResultsWindow(const TestResult& result, const Test& test, QWidget
     setupUI();
 }
 
-ResultsWindow::~ResultsWindow() {}
+ResultsWindow::~ResultsWindow() = default;
 
 void ResultsWindow::setupUI() {
     setStyleSheet(QString("background-color: %1;").arg(ColorPalette::backgroundColor().name()));
@@ -93,7 +93,7 @@ void ResultsWindow::setupUI() {
 
 // Функция onSaveClicked больше не нужна, так как результат сохраняется автоматически
 // Оставлена для совместимости, но больше не используется
-void ResultsWindow::onSaveClicked() {
+void ResultsWindow::onSaveClicked() const {
     // Результат уже сохранен автоматически при завершении теста
     // Эта функция больше не используется
 }

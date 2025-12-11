@@ -34,8 +34,8 @@ public:
     
 private:
     std::map<int, QuestionStats> questionStats;  // STL контейнер
-    int totalTests;
-    int totalAnswers;
+    int totalTests = 0;    // in-class initializer
+    int totalAnswers = 0;  // in-class initializer
 };
 
 #endif // STATISTICS_H

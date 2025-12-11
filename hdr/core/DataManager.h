@@ -64,6 +64,7 @@ public:
     void reloadData();
 
 private:
+    static inline DataManager instance{};
     DataManager();
     ~DataManager() = default;
     

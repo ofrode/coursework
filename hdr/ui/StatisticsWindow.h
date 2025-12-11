@@ -20,7 +20,7 @@ class ChartWidget : public QWidget {
     Q_OBJECT
 public:
     explicit ChartWidget(QWidget *parent = nullptr);
-    void setData(double yesPercent, double noPercent, double unsurePercent);
+    void setData(double yes, double no, double unsure);
     
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -28,9 +28,9 @@ protected:
 private:
     void drawLegend(QPainter& painter, int x, int y, int chartWidth);
     
-    double yesPercent;
-    double noPercent;
-    double unsurePercent;
+    double yesPercent = 0;     // in-class initializer
+    double noPercent = 0;      // in-class initializer
+    double unsurePercent = 0;  // in-class initializer
 };
 
 class StatisticsWindow : public QDialog {

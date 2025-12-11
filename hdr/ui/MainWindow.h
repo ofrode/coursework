@@ -21,8 +21,8 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow() override;
 
 private slots:
     void onAddTestClicked();
@@ -38,15 +38,15 @@ private:
     Test* findTest(int testId);
     int getNextTestId() { return nextTestId++; }
     
-    QTableWidget* tableWidget;
-    QPushButton* addButton;
+    QTableWidget* tableWidget = nullptr;
+    QPushButton* addButton = nullptr;
     std::vector<Test> tests;  // STL контейнер
-    int nextTestId;
+    int nextTestId = 1;  // in-class initializer
     
     // Указатели на окна (для управления жизненным циклом)
-    AddTestWindow* addTestWindow;
-    StatisticsWindow* statisticsWindow;
-    TestWindow* testWindow;
+    AddTestWindow* addTestWindow = nullptr;      // in-class initializer
+    StatisticsWindow* statisticsWindow = nullptr; // in-class initializer
+    TestWindow* testWindow = nullptr;            // in-class initializer
 };
 
 #endif // MAINWINDOW_H

@@ -25,7 +25,6 @@ void TestWindow::setupUI() {
     mainLayout->setSpacing(20);
     mainLayout->setContentsMargins(30, 30, 30, 30);
     
-    // Приветствие и ввод имени
     welcomeLabel = new QLabel("Добро пожаловать!\nВведите ваше имя для начала теста:", this);
     welcomeLabel->setAlignment(Qt::AlignCenter);
     welcomeLabel->setStyleSheet("font-size: 16px; font-weight: bold; margin: 20px;");
@@ -69,13 +68,10 @@ void TestWindow::setupUI() {
     mainLayout->addStretch();
     
     connect(startButton, &QPushButton::clicked, this, &TestWindow::onStartTestClicked);
-    // Подключаем Enter в поле ввода имени к кнопке "Начать тест"
     connect(nameEdit, &QLineEdit::returnPressed, this, &TestWindow::onStartTestClicked);
-    // Устанавливаем кнопку "Начать тест" как default, чтобы она активировалась по Enter
     startButton->setDefault(true);
     startButton->setAutoDefault(true);
     
-    // Элементы для прохождения теста (скрыты изначально)
     progressLabel = new QLabel("Вопрос 1 из 10", this);
     progressLabel->setAlignment(Qt::AlignCenter);
     progressLabel->setStyleSheet("font-size: 14px; margin: 10px;");
@@ -84,7 +80,6 @@ void TestWindow::setupUI() {
     
     progressBar = new QProgressBar(this);
     progressBar->setMinimum(0);
-    // Максимум будет установлен динамически при запуске теста
     progressBar->setMaximum(10);
     progressBar->setValue(0);
     progressBar->setTextVisible(true);
@@ -120,7 +115,6 @@ void TestWindow::setupUI() {
     mainLayout->addWidget(questionLabel);
     mainLayout->addStretch();
     
-    // Кнопки ответов
     QHBoxLayout* answersLayout = new QHBoxLayout();
     answersLayout->setContentsMargins(50, 0, 50, 0);
     
@@ -176,8 +170,6 @@ void TestWindow::setupUI() {
     connect(noButton, &QPushButton::clicked, [this]() { onAnswerClicked(AnswerType::NO); });
     connect(unsureButton, &QPushButton::clicked, [this]() { onAnswerClicked(AnswerType::UNSURE); });
     
-    // Устанавливаем кнопки ответов как autoDefault, чтобы они активировались по Enter
-    // setAutoDefault(true) автоматически устанавливает кнопку с фокусом как default при переключении Tab
     yesButton->setAutoDefault(true);
     noButton->setAutoDefault(true);
     unsureButton->setAutoDefault(true);
@@ -200,7 +192,6 @@ void TestWindow::onStartTestClicked() {
         return;
     }
     
-    // Проверка на наличие вопросов
     std::vector<Question> questions = test.getQuestions();
     if (questions.empty()) {
         QMessageBox::critical(this, "Ошибка", "Тест не содержит вопросов!");
@@ -212,7 +203,6 @@ void TestWindow::onStartTestClicked() {
         return;
     }
     
-    // Инициализация прогресс-бара с правильным количеством вопросов
     progressBar->setMaximum(static_cast<int>(questions.size()));
     progressBar->setValue(0);
     
@@ -220,12 +210,10 @@ void TestWindow::onStartTestClicked() {
     testStarted = true;
     currentQuestionIndex = 0;
     
-    // Скрыть элементы приветствия
     welcomeLabel->setVisible(false);
     nameEdit->setVisible(false);
     startButton->setVisible(false);
     
-    // Показать элементы теста
     progressLabel->setVisible(true);
     progressBar->setVisible(true);
     questionLabel->setVisible(true);
@@ -237,11 +225,9 @@ void TestWindow::onStartTestClicked() {
 }
 
 void TestWindow::showQuestion() {
-    // Получаем список вопросов один раз, чтобы избежать проблем с временными объектами
     std::vector<Question> questions = test.getQuestions();
     int questionsCount = static_cast<int>(questions.size());
     
-    // Проверка на валидность индекса и завершение теста
     if (currentQuestionIndex < 0 || currentQuestionIndex >= questionsCount) {
         if (currentQuestionIndex >= questionsCount) {
             finishTest();
@@ -251,7 +237,6 @@ void TestWindow::showQuestion() {
         return;
     }
     
-    // Используем копию вопроса вместо ссылки на временный объект
     Question question = questions[currentQuestionIndex];
     questionLabel->setText(QString("Вопрос %1:\n\n%2")
         .arg(currentQuestionIndex + 1)
@@ -262,7 +247,6 @@ void TestWindow::showQuestion() {
         .arg(currentQuestionIndex + 1)
         .arg(questionsCount));
     
-    // Устанавливаем фокус на первую кнопку (Да), чтобы можно было нажать Enter
     yesButton->setFocus();
     yesButton->setDefault(true);
     noButton->setDefault(false);
@@ -270,11 +254,9 @@ void TestWindow::showQuestion() {
 }
 
 void TestWindow::onAnswerClicked(AnswerType answer) {
-    // Сохранить ответы во временный вектор
     std::vector<AnswerType> tempAnswers = currentResult.getAnswers();
     tempAnswers.push_back(answer);
     
-    // Подсчет баллов
     int score = 0;
     for (auto ans : tempAnswers) {
         if (ans == AnswerType::YES) {
@@ -282,7 +264,6 @@ void TestWindow::onAnswerClicked(AnswerType answer) {
         }
     }
     
-    // Создать новый результат с правильными данными
     TestResult newResult(test.getId(), currentResult.getUserName(), score);
     for (auto ans : tempAnswers) {
         newResult.addAnswer(ans);
@@ -294,27 +275,22 @@ void TestWindow::onAnswerClicked(AnswerType answer) {
 }
 
 void TestWindow::finishTest() {
-    // Результат уже готов, просто показать его
     emit testCompleted(currentResult);
     showResults();
 }
 
 void TestWindow::showResults() {
     resultsWindow = new ResultsWindow(currentResult, test, this);
-    // Показываем окно результатов модально
     resultsWindow->exec();
-    // После закрытия окна результатов закрываем TestWindow
     if (resultsWindow) {
         resultsWindow->deleteLater();
         resultsWindow = nullptr;
     }
-    accept(); // Закрываем TestWindow
+    accept();
 }
 
 void TestWindow::keyPressEvent(QKeyEvent* event) {
-    // Если нажат Enter и тест запущен, активируем кнопку с фокусом
     if ((event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) && testStarted) {
-        // Находим кнопку с фокусом и активируем её
         if (QWidget* focusedWidget = focusWidget(); focusedWidget == yesButton || focusedWidget == noButton || focusedWidget == unsureButton) {
             QPushButton* button = qobject_cast<QPushButton*>(focusedWidget);
             if (button) {
@@ -322,13 +298,11 @@ void TestWindow::keyPressEvent(QKeyEvent* event) {
                 return;
             }
         }
-        // Если фокус не на кнопке, но кнопки видны, активируем первую кнопку (Да)
         if (yesButton->isVisible()) {
             yesButton->click();
             return;
         }
     }
-    // Вызываем базовую реализацию для обработки других клавиш
     QDialog::keyPressEvent(event);
 }
 

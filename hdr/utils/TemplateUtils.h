@@ -6,19 +6,16 @@
 #include <ranges>
 #include <iterator>
 
-// Шаблонная функция для поиска элемента в контейнере (C++20 ranges)
 template<typename Container, typename Value>
 auto findInContainer(const Container& container, const Value& value) {
     return std::ranges::find(container, value);
 }
 
-// Шаблонная функция для подсчета элементов (C++20 ranges)
 template<typename Container, typename Predicate>
 int countIf(const Container& container, Predicate pred) {
     return static_cast<int>(std::ranges::count_if(container, pred));
 }
 
-// Шаблонный класс для работы с итераторами
 template<typename T>
 class ContainerIterator {
 public:
@@ -38,5 +35,5 @@ private:
     std::vector<T>& container_;
 };
 
-#endif // TEMPLATEUTILS_H
+#endif 
 

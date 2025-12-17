@@ -6,15 +6,12 @@
 #include <map>
 #include <vector>
 
-// Класс для сбора статистики
 class Statistics {
 public:
     Statistics();
     
-    // Сбор статистики по тесту
     void collectStatistics(const Test& test);
     
-    // Получение статистики по вопросу
     struct QuestionStats {
         int totalAnswers;
         int yesCount;
@@ -28,15 +25,14 @@ public:
     QuestionStats getQuestionStats(int questionId) const;
     std::map<int, QuestionStats> getAllStats() const { return questionStats; }
     
-    // Общая статистика
     int getTotalTests() const { return totalTests; }
     int getTotalAnswers() const { return totalAnswers; }
     
 private:
-    std::map<int, QuestionStats> questionStats;  // STL контейнер
-    int totalTests = 0;    // in-class initializer
-    int totalAnswers = 0;  // in-class initializer
+    std::map<int, QuestionStats> questionStats;
+    int totalTests = 0;
+    int totalAnswers = 0;
 };
 
-#endif // STATISTICS_H
+#endif
 

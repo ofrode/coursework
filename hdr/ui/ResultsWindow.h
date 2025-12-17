@@ -30,5 +30,5 @@ private:
     const Test& test;
 };
 
-#endif // RESULTSWINDOW_H
+#endif 
 

@@ -5,7 +5,6 @@
 #include <QString>
 #include <vector>
 
-// Класс вопроса
 class Question {
 public:
     Question() : id(0) {}
@@ -18,14 +17,13 @@ public:
     void setText(const QString& t) { text = t; }
     void addAnswer(const Answer& answer);
     
-    // Перегрузка операторов (C++20: operator!= генерируется автоматически)
     bool operator==(const Question& other) const;
     
 private:
     int id;
     QString text;
-    std::vector<Answer> answers;  // STL контейнер
+    std::vector<Answer> answers;
 };
 
-#endif // QUESTION_H
+#endif
 

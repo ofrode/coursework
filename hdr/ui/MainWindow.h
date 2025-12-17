@@ -43,14 +43,13 @@ private:
     
     QTableWidget* tableWidget = nullptr;
     QPushButton* addButton = nullptr;
-    std::vector<Test> tests;  // STL контейнер
-    int nextTestId = 1;  // in-class initializer
+    std::vector<Test> tests;
+    int nextTestId = 1;
     
-    // Указатели на окна (для управления жизненным циклом)
-    AddTestWindow* addTestWindow = nullptr;      // in-class initializer
-    StatisticsWindow* statisticsWindow = nullptr; // in-class initializer
-    TestWindow* testWindow = nullptr;            // in-class initializer
+    AddTestWindow* addTestWindow = nullptr;
+    StatisticsWindow* statisticsWindow = nullptr; 
+    TestWindow* testWindow = nullptr;
 };
 
-#endif // MAINWINDOW_H
+#endif
 

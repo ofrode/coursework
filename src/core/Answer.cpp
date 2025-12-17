@@ -1,7 +1,7 @@
 #include "../../hdr/core/Answer.h"
 
 QString Answer::getTypeString() const {
-    using enum AnswerType;  // C++20: сокращение записи
+    using enum AnswerType;
     switch(type) {
         case YES:
             return "Да";
@@ -13,6 +13,4 @@ QString Answer::getTypeString() const {
             return "Неизвестно";
     }
 }
-
-// C++20: operator== и operator!= используют = default
 

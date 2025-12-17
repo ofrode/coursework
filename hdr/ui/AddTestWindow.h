@@ -47,10 +47,10 @@ private:
     QPushButton* saveButton;
     QPushButton* cancelButton;
     
-    std::vector<QString> questions;  // STL контейнер
-    int nextQuestionId = 0;  // in-class initializer
-    int testId = 0;          // in-class initializer
+    std::vector<QString> questions;
+    int nextQuestionId = 0;
+    int testId = 0;
 };
 
-#endif // ADDTESTWINDOW_H
+#endif
 

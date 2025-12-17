@@ -43,8 +43,8 @@ private:
     
     const Test& test;
     TestResult currentResult;
-    int currentQuestionIndex = 0;    // in-class initializer
-    bool testStarted = false;        // in-class initializer
+    int currentQuestionIndex = 0; 
+    bool testStarted = false;
     
     QLabel* welcomeLabel = nullptr;
     QLineEdit* nameEdit = nullptr;
@@ -56,8 +56,8 @@ private:
     QPushButton* unsureButton = nullptr;
     QLabel* progressLabel = nullptr;
     
-    ResultsWindow* resultsWindow = nullptr;  // in-class initializer
+    ResultsWindow* resultsWindow = nullptr;
 };
 
-#endif // TESTWINDOW_H
+#endif 
 

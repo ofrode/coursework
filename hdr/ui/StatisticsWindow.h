@@ -15,7 +15,6 @@
 #include <QPainter>
 #include <QWidget>
 
-// Виджет для отображения диаграммы
 class ChartWidget : public QWidget {
     Q_OBJECT
 public:
@@ -28,9 +27,9 @@ protected:
 private:
     void drawLegend(QPainter& painter, int x, int y, int chartWidth) const;
     
-    double yesPercent = 0;     // in-class initializer
-    double noPercent = 0;      // in-class initializer
-    double unsurePercent = 0;  // in-class initializer
+    double yesPercent = 0;
+    double noPercent = 0;
+    double unsurePercent = 0;
 };
 
 class StatisticsWindow : public QDialog {
@@ -50,5 +49,5 @@ private:
     ChartWidget* chartWidget;
 };
 
-#endif // STATISTICSWINDOW_H
+#endif
 

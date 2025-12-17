@@ -27,7 +27,7 @@ void Statistics::collectStatistics(const Test& test) {
             QuestionStats& stats = questionStats[questionId];
             stats.totalAnswers++;
             
-            using enum AnswerType;  // C++20
+            using enum AnswerType;
             switch(answers[i]) {
                 case YES:
                     stats.yesCount++;
@@ -42,7 +42,6 @@ void Statistics::collectStatistics(const Test& test) {
         }
     }
     
-    // Вычисление процентов
     for (auto& [questionId, stats] : questionStats) {
         if (stats.totalAnswers > 0) {
             stats.yesPercent = (stats.yesCount * 100.0) / stats.totalAnswers;

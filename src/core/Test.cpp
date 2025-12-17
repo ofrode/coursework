@@ -25,7 +25,6 @@ void Test::removeQuestion(int index) {
 bool Test::operator==(const Test& other) const {
     return id == other.id && name == other.name;
 }
-// C++20: operator!= генерируется автоматически
 
 Test& Test::operator=(const Test& other) {
     if (this != &other) {
@@ -37,7 +36,6 @@ Test& Test::operator=(const Test& other) {
     return *this;
 }
 
-// Дружественная функция
 QString testToString(const Test& test) {
     return QString("Тест #%1: %2 (Вопросов: %3)")
         .arg(test.id)

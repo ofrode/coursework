@@ -7,19 +7,18 @@
 #include <vector>
 #include <memory>
 
-// Базовый класс теста
+
 class BaseTest {
 public:
     virtual ~BaseTest() = default;
     virtual QString getType() const = 0;
 };
 
-// Класс психологического теста
 class Test : public BaseTest {
 public:
     Test();
     Test(int id, const QString& name);
-    ~Test() override;  // Виртуальный деструктор
+    ~Test() override;
     
     int getId() const { return id; }
     QString getName() const { return name; }
@@ -31,25 +30,21 @@ public:
     void addResult(const TestResult& result);
     void removeQuestion(int index);
     
-    // Перегрузка операторов (C++20: operator!= генерируется автоматически)
     bool operator==(const Test& other) const;
     Test& operator=(const Test& other);
     
-    // Дружественная функция для вывода
     friend QString testToString(const Test& test);
-    
-    // Наследование
+
     QString getType() const override { return "Психологический тест"; }
     
 private:
     int id;
     QString name;
-    std::vector<Question> questions;  // STL контейнер
-    std::vector<TestResult> results;   // STL контейнер для результатов
+    std::vector<Question> questions;
+    std::vector<TestResult> results;
 };
 
-// Дружественная функция
 QString testToString(const Test& test);
 
-#endif // TEST_H
+#endif
 

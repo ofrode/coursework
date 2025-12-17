@@ -19,7 +19,6 @@
 
 ChartWidget::ChartWidget(QWidget *parent)
     : QWidget(parent) {
-    // Увеличиваем минимальную высоту, чтобы поместилась диаграмма и легенда
     setMinimumHeight(280);
 }
 
@@ -40,30 +39,25 @@ void ChartWidget::paintEvent(QPaintEvent *event) {
     int height = this->height();
     int margin = 20;
     
-    // Выделяем место для легенды (примерно 80 пикселей снизу)
     int legendHeight = 90;
     int chartHeight = height - margin * 2 - legendHeight;
     int chartWidth = qMin(chartHeight, width - 2 * margin);
     
-    // Центрируем диаграмму по горизонтали
     int chartX = (width - chartWidth) / 2;
     int chartY = margin;
     
-    // Рисуем круговую диаграмму
     QRectF rect(chartX, chartY, chartWidth, chartWidth);
     
     double total = yesPercent + noPercent + unsurePercent;
     if (total == 0) {
         painter.setBrush(QBrush(ColorPalette::lightPeach()));
         painter.drawEllipse(rect);
-        // Рисуем легенду даже если нет данных
         drawLegend(painter, chartX, chartY + chartWidth + 15, chartWidth);
         return;
     }
     
     double startAngle = 0;
     
-    // Да (зеленый)
     if (yesPercent > 0) {
         double spanAngle = (yesPercent / total) * 360 * 16;
         painter.setBrush(QBrush(ColorPalette::addButtonColor()));
@@ -71,7 +65,6 @@ void ChartWidget::paintEvent(QPaintEvent *event) {
         startAngle += spanAngle;
     }
     
-    // Нет (красный)
     if (noPercent > 0) {
         double spanAngle = (noPercent / total) * 360 * 16;
         painter.setBrush(QBrush(ColorPalette::deleteButtonColor()));
@@ -79,14 +72,12 @@ void ChartWidget::paintEvent(QPaintEvent *event) {
         startAngle += spanAngle;
     }
     
-    // Не могу ответить (синий)
     if (unsurePercent > 0) {
         double spanAngle = (unsurePercent / total) * 360 * 16;
         painter.setBrush(QBrush(ColorPalette::actionButtonColor()));
         painter.drawPie(rect, static_cast<int>(startAngle), static_cast<int>(spanAngle));
     }
     
-    // Рисуем легенду
     drawLegend(painter, chartX, chartY + chartWidth + 15, chartWidth);
 }
 
@@ -101,14 +92,11 @@ void ChartWidget::drawLegend(QPainter& painter, int x, int y, int chartWidth) co
     int colorBoxSize = 18;
     int textOffset = colorBoxSize + 8;
     
-    // Центрируем легенду под диаграммой
-    // Ширина легенды должна быть достаточной для текста
-    int legendWidth = qMin(chartWidth, 250);  // Максимальная ширина легенды
+    int legendWidth = qMin(chartWidth, 250);
     int legendStartX = x + (chartWidth - legendWidth) / 2;
     
     int currentY = y;
     
-    // Всегда показываем все три элемента легенды с процентами
     QList<QPair<QString, QColor>> legendItems;
     legendItems.append(QPair<QString, QColor>("Да", ColorPalette::addButtonColor()));
     legendItems.append(QPair<QString, QColor>("Нет", ColorPalette::deleteButtonColor()));
@@ -119,30 +107,26 @@ void ChartWidget::drawLegend(QPainter& painter, int x, int y, int chartWidth) co
     percents.append(noPercent);
     percents.append(unsurePercent);
     
-    // Рисуем рамку для легенды
     int legendBoxHeight = legendItems.size() * (legendItemHeight + legendItemSpacing) - legendItemSpacing + 10;
     int legendBoxWidth = legendWidth;
     painter.setPen(QPen(Qt::gray, 1));
     painter.setBrush(QBrush(Qt::white));
     painter.drawRoundedRect(legendStartX - 5, currentY - 5, legendBoxWidth + 10, legendBoxHeight + 10, 5, 5);
     
-    // Рисуем элементы легенды
     painter.setPen(Qt::black);
     auto percentIt = percents.constBegin();
     for (const auto& [label, color] : legendItems) {
         if (percentIt == percents.constEnd()) {
-            break; // Защита от несоответствия размеров
+            break;
         }
         
         int itemX = legendStartX;
         int itemY = currentY;
         
-        // Цветной квадрат
         painter.setBrush(QBrush(color));
         painter.setPen(QPen(Qt::black, 1));
         painter.drawRect(itemX, itemY, colorBoxSize, colorBoxSize);
         
-        // Текст с процентом
         const double percent = *percentIt;
         QString percentText = (percent > 0) ? 
             QString("%1: %2%").arg(label).arg(QString::number(percent, 'f', 1)) :
@@ -178,7 +162,6 @@ void StatisticsWindow::setupUI() {
     titleLabel->setStyleSheet("font-size: 20px; font-weight: bold; margin: 10px;");
     mainLayout->addWidget(titleLabel);
     
-    // Таблица статистики
     statsTable = new QTableWidget(this);
     statsTable->setColumnCount(5);
     QStringList headers;
@@ -203,7 +186,6 @@ void StatisticsWindow::setupUI() {
     );
     mainLayout->addWidget(statsTable);
     
-    // Диаграмма
     QLabel* chartLabel = new QLabel("Общая статистика по всем вопросам:", this);
     chartLabel->setStyleSheet("font-size: 14px; font-weight: bold; margin: 10px 0;");
     mainLayout->addWidget(chartLabel);
@@ -212,7 +194,6 @@ void StatisticsWindow::setupUI() {
     chartWidget->setStyleSheet("background-color: white; border: 1px solid #ddd; border-radius: 5px;");
     mainLayout->addWidget(chartWidget);
     
-    // Информация о автоматическом сохранении статистики
     QLabel* saveInfoLabel = new QLabel("💾 Статистика автоматически обновляется и сохраняется при каждом прохождении теста", this);
     saveInfoLabel->setAlignment(Qt::AlignCenter);
     saveInfoLabel->setWordWrap(true);
@@ -253,7 +234,6 @@ void StatisticsWindow::updateStatistics() {
     
     statsTable->resizeColumnsToContents();
     
-    // Обновить диаграмму
     if (totalAnswers > 0) {
         double yesPercent = (totalYes * 100.0) / totalAnswers;
         double noPercent = (totalNo * 100.0) / totalAnswers;
@@ -261,7 +241,3 @@ void StatisticsWindow::updateStatistics() {
         chartWidget->setData(yesPercent, noPercent, unsurePercent);
     }
 }
-
-// Функция onSaveStatisticsClicked больше не нужна, так как статистика сохраняется автоматически
-// Статистика автоматически обновляется и сохраняется при каждом прохождении теста
-

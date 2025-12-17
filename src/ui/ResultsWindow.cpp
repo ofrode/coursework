@@ -60,7 +60,6 @@ void ResultsWindow::setupUI() {
     
     mainLayout->addStretch();
     
-    // Информация о автоматическом сохранении
     QLabel* saveInfoLabel = new QLabel("💾 Результат автоматически сохранен", this);
     saveInfoLabel->setAlignment(Qt::AlignCenter);
     saveInfoLabel->setStyleSheet("font-size: 12px; color: #666; margin: 10px;");
@@ -90,11 +89,3 @@ void ResultsWindow::setupUI() {
     buttonsLayout->addStretch();
     mainLayout->addLayout(buttonsLayout);
 }
-
-// Функция onSaveClicked больше не нужна, так как результат сохраняется автоматически
-// Оставлена для совместимости, но больше не используется
-void ResultsWindow::onSaveClicked() const {
-    // Результат уже сохранен автоматически при завершении теста
-    // Эта функция больше не используется
-}
-

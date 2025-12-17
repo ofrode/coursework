@@ -28,7 +28,6 @@ void AddTestWindow::setupUI() {
     
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     
-    // Название теста
     QLabel* nameLabel = new QLabel("Название теста:", this);
     nameEdit = new QLineEdit(this);
     nameEdit->setPlaceholderText("Введите название теста");
@@ -36,7 +35,6 @@ void AddTestWindow::setupUI() {
     mainLayout->addWidget(nameLabel);
     mainLayout->addWidget(nameEdit);
     
-    // Список вопросов
     QLabel* questionsLabel = new QLabel("Вопросы:", this);
     questionsList = new QListWidget(this);
     questionsList->setStyleSheet(
@@ -49,7 +47,6 @@ void AddTestWindow::setupUI() {
     mainLayout->addWidget(questionsLabel);
     mainLayout->addWidget(questionsList);
     
-    // Редактирование вопроса
     QHBoxLayout* questionEditLayout = new QHBoxLayout();
     questionTextEdit = new QTextEdit(this);
     questionTextEdit->setPlaceholderText("Введите текст вопроса");
@@ -93,7 +90,6 @@ void AddTestWindow::setupUI() {
     questionEditLayout->addLayout(buttonsLayout);
     mainLayout->addLayout(questionEditLayout);
     
-    // Кнопки действий
     QHBoxLayout* actionLayout = new QHBoxLayout();
     
     addFromFileButton = new QPushButton("📁 Загрузить из файла", this);
@@ -169,7 +165,6 @@ void AddTestWindow::onRemoveQuestionClicked() {
         questions.erase(questions.begin() + row);
         delete questionsList->takeItem(row);
         
-        // Обновить нумерацию
         questionsList->clear();
         for (size_t i = 0; i < questions.size(); ++i) {
             questionsList->addItem(QString("%1. %2").arg(i + 1).arg(questions[i]));
@@ -203,7 +198,6 @@ void AddTestWindow::onAddFromFileClicked() {
 void AddTestWindow::onSaveTestClicked() {
     if (!validateTest()) return;
     
-    // Создать тест
     Test test(testId, nameEdit->text());
     
     for (size_t i = 0; i < questions.size(); ++i) {

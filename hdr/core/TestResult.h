@@ -6,7 +6,6 @@
 #include <vector>
 #include "Answer.h"
 
-// Класс для хранения результата теста
 class TestResult {
 public:
     TestResult() : testId(0), score(0) {}
@@ -31,8 +30,7 @@ private:
     int score;
     QString resultText;
     QDateTime dateTime;
-    std::vector<AnswerType> answers;  // STL контейнер
-};
+    std::vector<AnswerType> answers;
 
-#endif // TESTRESULT_H
+#endif
 

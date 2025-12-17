@@ -31,7 +31,6 @@ void MainWindow::setupUI() {
     
     QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
     
-    // Кнопка добавления теста (справа вверху)
     QHBoxLayout* topLayout = new QHBoxLayout();
     topLayout->addStretch();
     addButton = new QPushButton("+ Добавить тест", this);
@@ -60,29 +59,22 @@ void MainWindow::setupUI() {
     topLayout->addWidget(addButton);
     mainLayout->addLayout(topLayout);
     
-    // Таблица тестов
     tableWidget = new QTableWidget(this);
     tableWidget->setColumnCount(4);
     QStringList headers;
     headers << "ID теста" << "Название" << "Статистика" << "Действия";
     tableWidget->setHorizontalHeaderLabels(headers);
     
-    // Настройка режимов изменения размеров столбцов
     QHeaderView* header = tableWidget->horizontalHeader();
     
-    // Устанавливаем минимальные размеры для всех столбцов
     header->setMinimumSectionSize(50);
     
-    // ID теста - фиксированный размер по содержимому
     header->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     
-    // Название - растягивается, занимает основное пространство (будет самым широким)
     header->setSectionResizeMode(1, QHeaderView::Stretch);
     
-    // Статистика - размер по содержимому
     header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
     
-    // Действия - размер по содержимому, но не будет растягиваться (будет уже, чем Название)
     header->setSectionResizeMode(3, QHeaderView::ResizeToContents);
     
     tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -112,16 +104,13 @@ void MainWindow::refreshTable() {
         int row = tableWidget->rowCount();
         tableWidget->insertRow(row);
         
-        // ID теста
         QTableWidgetItem* idItem = new QTableWidgetItem(QString::number(test.getId()));
         idItem->setTextAlignment(Qt::AlignCenter);
         tableWidget->setItem(row, 0, idItem);
         
-        // Название
         QTableWidgetItem* nameItem = new QTableWidgetItem(test.getName());
         tableWidget->setItem(row, 1, nameItem);
         
-        // Кнопка статистики
         QPushButton* statsButton = new QPushButton("📊 Статистика");
         statsButton->setStyleSheet(QString(
             "QPushButton {"
@@ -141,7 +130,6 @@ void MainWindow::refreshTable() {
         });
         tableWidget->setCellWidget(row, 2, statsButton);
         
-        // Кнопки действий
         QWidget* actionsWidget = new QWidget();
         QHBoxLayout* actionsLayout = new QHBoxLayout(actionsWidget);
         actionsLayout->setContentsMargins(5, 2, 5, 2);
@@ -186,9 +174,6 @@ void MainWindow::refreshTable() {
         
         tableWidget->setCellWidget(row, 3, actionsWidget);
     }
-    
-    // Не вызываем resizeColumnsToContents(), так как мы используем Stretch для столбца "Название"
-    // и ResizeToContents для остальных столбцов, что обеспечит правильное распределение пространства
 }
 
 void MainWindow::onAddTestClicked() {
@@ -237,24 +222,20 @@ void MainWindow::onTakeTestClicked(int testId) {
     connect(testWindow, &TestWindow::testCompleted, this, [this, testId](const TestResult& result) {
         Test* test = findTest(testId);
         if (test) {
-            // Добавляем результат в тест
             test->addResult(result);
             
-            // Автоматически сохраняем результат прохождения теста
             try {
                 FileManager::saveResultAutomatically(result);
             } catch (const FileException& e) {
                 qDebug() << "Ошибка автоматического сохранения результата:" << e.what();
             }
             
-            // Автоматически сохраняем статистику (кумулятивную по всем прохождениям)
             try {
                 FileManager::saveStatisticsAutomatically(*test);
             } catch (const FileException& e) {
                 qDebug() << "Ошибка автоматического сохранения статистики:" << e.what();
             }
             
-            // Сохраняем тест с новым результатом
             refreshTable();
             saveTests();
         }
@@ -286,19 +267,16 @@ void MainWindow::loadTests() {
         QString testDir = FileManager::getTestQuestionDir();
         tests = FileManager::loadAllTests(testDir);
         
-        // Найти максимальный ID
         for (const auto& test : tests) {
             if (test.getId() >= nextTestId) {
                 nextTestId = test.getId() + 1;
             }
         }
         
-        // Загружаем все результаты для каждого теста из TestAnswerTxt
         for (auto& test : tests) {
             loadResultsForTest(test);
         }
         
-        // После загрузки всех результатов автоматически сохраняем статистику для каждого теста
         for (const auto& test : tests) {
             if (!test.getResults().empty()) {
                 saveStatisticsForTest(test);
@@ -326,7 +304,6 @@ void MainWindow::saveTests() const {
 void MainWindow::loadResultsForTest(Test& test) const {
     try {
         std::vector<TestResult> results = FileManager::loadAllResultsForTest(test.getId());
-        // Добавляем все загруженные результаты в тест
         for (const auto& result : results) {
             test.addResult(result);
         }

@@ -3,14 +3,12 @@
 
 #include <QString>
 
-// Перечисление типов ответов
 enum class AnswerType {
-    YES = 0,      // Да
-    NO = 1,       // Нет
-    UNSURE = 2    // Не могу ответить
+    YES = 0, 
+    NO = 1,
+    UNSURE = 2 
 };
 
-// Класс для хранения ответа
 class Answer {
 public:
     Answer() : type(AnswerType::UNSURE), score(0) {}
@@ -20,13 +18,11 @@ public:
     int getScore() const { return score; }
     QString getTypeString() const;
     
-    // Перегрузка операторов (C++20: operator== и operator!= генерируются автоматически)
     bool operator==(const Answer& other) const = default;
     
 private:
     AnswerType type;
-    int score;  // Баллы за ответ
+    int score;
 };
 
-#endif // ANSWER_H
-
+#endif

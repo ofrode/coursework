@@ -3,10 +3,12 @@
 #include <algorithm>
 
 DataManager& DataManager::getInstance() {
+    static DataManager instance;
     return instance;
 }
 
-DataManager::DataManager() = default;
+DataManager::DataManager() {
+}
 
 void DataManager::loadAllTests() {
     QString testDir = FileManager::getTestQuestionDir();
@@ -37,32 +39,31 @@ std::vector<Test>& DataManager::getAllTests() {
 }
 
 Question* DataManager::getQuestion(int testId, int questionIndex) {
-    if (const Test* test = getTestById(testId)) {
+    Test* test = getTestById(testId);
+    if (test) {
         auto questions = test->getQuestions();
         if (questionIndex >= 0 && questionIndex < static_cast<int>(questions.size())) {
-            // Возвращаем указатель на вопрос в тесте
-            // Примечание: это работает только если Test хранит вопросы по значению
-            return nullptr; // Нужна модификация Test для прямого доступа
+            return nullptr;
         }
     }
     return nullptr;
 }
 
 std::vector<Question> DataManager::getQuestions(int testId) {
-    if (const Test* test = getTestById(testId)) {
+    Test* test = getTestById(testId);
+    if (test) {
         return test->getQuestions();
     }
     return std::vector<Question>();
 }
 
 void DataManager::collectStatisticsForTest(int testId) {
-    if (const Test* test = getTestById(testId)) {
-        // Загружаем результаты если они еще не загружены
+    Test* test = getTestById(testId);
+    if (test) {
         if (test->getResults().empty()) {
             loadResultsForTest(testId);
         }
         
-        // Создаем или обновляем статистику
         Statistics stats;
         stats.collectStatistics(*test);
         statisticsMap[testId] = stats;
@@ -71,19 +72,20 @@ void DataManager::collectStatisticsForTest(int testId) {
 }
 
 Statistics* DataManager::getStatisticsForTest(int testId) {
-    // Если статистика еще не собрана, собираем её
-    if (!statisticsLoaded.contains(testId) || !statisticsLoaded[testId]) {
+    if (statisticsLoaded.find(testId) == statisticsLoaded.end() || !statisticsLoaded[testId]) {
         collectStatisticsForTest(testId);
     }
     
-    if (auto it = statisticsMap.find(testId); it != statisticsMap.end()) {
+    auto it = statisticsMap.find(testId);
+    if (it != statisticsMap.end()) {
         return &(it->second);
     }
     return nullptr;
 }
 
 Statistics::QuestionStats DataManager::getQuestionStats(int testId, int questionId) {
-    if (const Statistics* stats = getStatisticsForTest(testId)) {
+    Statistics* stats = getStatisticsForTest(testId);
+    if (stats) {
         return stats->getQuestionStats(questionId);
     }
     return Statistics::QuestionStats();
@@ -97,7 +99,6 @@ void DataManager::addResultToTest(int testId, const TestResult& result) {
     Test* test = getTestById(testId);
     if (test) {
         test->addResult(result);
-        // Сбрасываем флаг статистики, чтобы она пересчиталась
         statisticsLoaded[testId] = false;
     }
 }
@@ -105,12 +106,13 @@ void DataManager::addResultToTest(int testId, const TestResult& result) {
 void DataManager::saveTestResult(const TestResult& result) {
     FileManager::saveResultAutomatically(result);
     
-    // Добавляем результат в тест
+
     addResultToTest(result.getTestId(), result);
 }
 
 void DataManager::saveStatistics(int testId) {
-    if (const Test* test = getTestById(testId)) {
+    Test* test = getTestById(testId);
+    if (test) {
         FileManager::saveStatisticsAutomatically(*test);
     }
 }
@@ -121,5 +123,3 @@ void DataManager::reloadData() {
     statisticsLoaded.clear();
     loadAllTests();
 }
-
-

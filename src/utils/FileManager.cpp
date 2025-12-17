@@ -31,10 +31,8 @@ bool parseMetadataLine(const QString& line, int& testId, QString& userName, int&
     }
     if (line.startsWith("Дата и время:")) {
         const QString dateTimeStr = line.mid(14).trimmed();
-        // Используем 24-часовой формат (HH для часов 0-23)
         dateTime = QDateTime::fromString(dateTimeStr, "yyyy-MM-dd HH:mm:ss");
         if (!dateTime.isValid()) {
-            // Пробуем альтернативный формат (hh для часов 0-11)
             dateTime = QDateTime::fromString(dateTimeStr, "yyyy-MM-dd hh:mm:ss");
         }
         return true;
@@ -79,24 +77,20 @@ std::optional<Test> tryLoadTestFile(const QFileInfo& fileInfo) {
     }
     return std::nullopt;
 }
-} // namespace
+} 
 
 QString FileManager::getProjectRootDir() {
-    // Получаем директорию исполняемого файла
     QString appDir = QApplication::applicationDirPath();
     QDir dir(appDir);
     
-    // Если исполняемый файл находится в build/, поднимаемся на уровень вверх
     if (dir.dirName() == "build") {
         dir.cdUp();
     }
     
-    // Проверяем наличие CMakeLists.txt для подтверждения, что это корень проекта
     if (const auto cmakeListsPath = dir.absoluteFilePath("CMakeLists.txt"); QFile::exists(cmakeListsPath)) {
         return dir.absolutePath();
     }
     
-    // Если CMakeLists.txt не найден, пытаемся найти его, поднимаясь вверх по дереву
     QDir currentDir = QDir::current();
     while (!currentDir.isRoot()) {
         if (const auto cmakePath = currentDir.absoluteFilePath("CMakeLists.txt"); QFile::exists(cmakePath)) {
@@ -107,7 +101,6 @@ QString FileManager::getProjectRootDir() {
         }
     }
     
-    // Если не удалось найти корень проекта, возвращаем текущую директорию
     return QDir::current().absolutePath();
 }
 
@@ -116,7 +109,6 @@ QString FileManager::getTestQuestionDir() {
     QDir dir(rootDir);
     QString testDir = dir.absoluteFilePath("TestQuestionTxt");
     
-    // Создаем директорию, если её нет
     if (QDir testQDir(testDir); !testQDir.exists()) {
         testQDir.mkpath(".");
     }
@@ -129,7 +121,6 @@ QString FileManager::getTestAnswerDir() {
     QDir dir(rootDir);
     QString answerDir = dir.absoluteFilePath("TestAnswerTxt");
     
-    // Создаем директорию, если её нет
     if (QDir testADir(answerDir); !testADir.exists()) {
         testADir.mkpath(".");
     }
@@ -142,7 +133,6 @@ QString FileManager::getStatisticsDir() {
     QDir dir(rootDir);
     QString statDir = dir.absoluteFilePath("Stat");
     
-    // Создаем директорию, если её нет
     if (QDir statDirectory(statDir); !statDirectory.exists()) {
         statDirectory.mkpath(".");
     }
@@ -284,13 +274,11 @@ TestResult FileManager::loadResultFromFile(const QString& filename) {
         while (in.readLineInto(&line)) {
             QString trimmedLine = line.trimmed();
             
-            // Пропускаем пустые строки и заголовок
             if (trimmedLine.isEmpty() || trimmedLine.startsWith("===")) {
                 continue;
             }
             
             if (trimmedLine.startsWith("Результат:")) {
-                // Пропускаем строку с описанием результата, она вычисляется автоматически
                 continue;
             }
 
@@ -313,15 +301,12 @@ TestResult FileManager::loadResultFromFile(const QString& filename) {
         
         file.close();
         
-        // Создаем объект результата
         result = TestResult(testId, userName, score);
         
-        // Устанавливаем дату и время, если они были загружены из файла
         if (dateTime.isValid()) {
             result.setDateTime(dateTime);
         }
         
-        // Добавляем ответы
         for (auto answer : answers) {
             result.addAnswer(answer);
         }
@@ -336,7 +321,6 @@ void FileManager::saveResultAutomatically(const TestResult& result) {
     try {
         QString answerDir = getTestAnswerDir();
         
-        // Формируем имя файла: result_test{testId}_{userName}_{dateTime}.txt
         QString userName = result.getUserName();
         userName.replace(" ", "_");
         userName.replace("/", "_");
@@ -373,8 +357,6 @@ std::vector<TestResult> FileManager::loadAllResultsForTest(int testId) {
             return results;
         }
         
-        // Ищем все файлы результатов для конкретного теста
-        // Формат имени: result_test{testId}_*.txt
         QString pattern = QString("result_test%1_*.txt").arg(testId);
         QStringList filters;
         filters << pattern;
@@ -383,7 +365,6 @@ std::vector<TestResult> FileManager::loadAllResultsForTest(int testId) {
         
         for (const QFileInfo& fileInfo : fileList) {
             if (auto result = tryLoadResultFile(fileInfo)) {
-                // Проверяем, что ID теста совпадает (на случай, если в имени файла что-то не так)
                 if (result->getTestId() == testId) {
                     results.push_back(*result);
                 }
@@ -400,7 +381,6 @@ void FileManager::saveStatisticsAutomatically(const Test& test) {
     try {
         QString statDir = getStatisticsDir();
         
-        // Формируем имя файла: statistics_test{testId}.txt (один файл на тест)
         QDir dir(statDir);
         QString filename = dir.absoluteFilePath(QString("statistics_test%1.txt")
             .arg(test.getId()));
@@ -413,7 +393,6 @@ void FileManager::saveStatisticsAutomatically(const Test& test) {
         QTextStream out(&file);
         out.setCodec("UTF-8");
         
-        // Собираем статистику по всем результатам теста
         Statistics statistics;
         statistics.collectStatistics(test);
         

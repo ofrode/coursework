@@ -14,6 +14,10 @@
 #include <QDateTime>
 #include <optional>
 #include <stdexcept>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QStringConverter>
+using QStringConverter = QStringConverter;
+#endif
 
 namespace {
 bool parseMetadataLine(const QString& line, int& testId, QString& userName, int& score, QDateTime& dateTime) {
@@ -158,7 +162,13 @@ void FileManager::saveTestToFile(const Test& test, const QString& filename) {
         }
         
         QTextStream out(&file);
-        out.setCodec("UTF-8");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        out.setEncoding(QStringConverter::Utf8);
+        out.setGenerateByteOrderMark(false);
+#else
+        QTextCodec* codec = QTextCodec::codecForName("UTF-8");
+        out.setCodec(codec);
+#endif
         
         out << "TEST_ID:" << test.getId() << "\n";
         out << "TEST_NAME:" << test.getName() << "\n";
@@ -181,7 +191,12 @@ Test FileManager::loadTestFromFile(const QString& filename) {
         QFile file(filename);
         file.open(QIODevice::ReadOnly | QIODevice::Text);
         QTextStream in(&file);
-        in.setCodec("UTF-8");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        in.setEncoding(QStringConverter::Utf8);
+#else
+        QTextCodec* codec = QTextCodec::codecForName("UTF-8");
+        in.setCodec(codec);
+#endif
         
         Test test;
         QString line;
@@ -223,7 +238,13 @@ void FileManager::saveResultToFile(const TestResult& result, const QString& file
         }
         
         QTextStream out(&file);
-        out.setCodec("UTF-8");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        out.setEncoding(QStringConverter::Utf8);
+        out.setGenerateByteOrderMark(false);
+#else
+        QTextCodec* codec = QTextCodec::codecForName("UTF-8");
+        out.setCodec(codec);
+#endif
         
         out << "=== Результат теста ===\n";
         out << "ID теста: " << result.getTestId() << "\n";
@@ -260,7 +281,12 @@ TestResult FileManager::loadResultFromFile(const QString& filename) {
         QFile file(filename);
         file.open(QIODevice::ReadOnly | QIODevice::Text);
         QTextStream in(&file);
-        in.setCodec("UTF-8");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        in.setEncoding(QStringConverter::Utf8);
+#else
+        QTextCodec* codec = QTextCodec::codecForName("UTF-8");
+        in.setCodec(codec);
+#endif
         
         TestResult result;
         QString line;
@@ -391,7 +417,11 @@ void FileManager::saveStatisticsAutomatically(const Test& test) {
         }
         
         QTextStream out(&file);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        out.setEncoding(QStringConverter::Utf8);
+#else
         out.setCodec("UTF-8");
+#endif
         
         Statistics statistics;
         statistics.collectStatistics(test);
